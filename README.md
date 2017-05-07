@@ -1,31 +1,17 @@
-# hapi-mongo-starter
+# Shop-App
 
-Hapi and MongoDB minimal starter
-
-## How to install
-
-```
-npm install
-```
-
-## How to start
-
-```
-npm start
-```
-
-## How to start in watch mode
-
-```
-npm run watch
-```
-
-## How to run lint
-
-```
-npm run lint
-```
+This is the backend part of a simple shop web app written to get familiar with Angular + Hapi + Mongo
 
 ## Prerequisites
-+ Node.js
-+ MongoDB
+
+MongoDB
+Nodejs
+
+## Installation
+
+`npm install`
+
+
+## Running
+
+`npm start`
