@@ -26,13 +26,9 @@ const show = {
     const {id} = request.params;
     Item.findById(id)
         .populate({
-          path: 'opinions',
-          model: 'Opinion',
-          populate: {
-            path: 'owner',
-            select: 'username',
-            model: 'User'
-          }
+          path: 'opinions.user',
+          model: 'User',
+          select: 'username'
         })
         .then((result) => {
           if (!result) {
@@ -57,6 +53,29 @@ const create = {
     const item = request.payload;
     Item.create(item).then((result) => {
       reply(result).code(201);
+    });
+  }
+};
+
+const addOpinion = {
+  method: 'POST',
+  path: '/api/items/addOpinion/{id}',
+  handler: (request, reply) => {
+    const {id} = request.params;
+    const opinion = {
+      user: request.auth.credentials.id,
+      date: new Date(),
+      content: request.payload.content
+    };
+    Item.findById(id).then((item) => {
+      item.opinions.push(opinion);
+      item.save((err) => {
+        if (err) {
+          return reply(Boom.notFound('Bad request!'));
+        }
+        reply(opinion).code(201);
+      });
+
     });
   }
 };
@@ -115,6 +134,7 @@ module.exports = [
   index,
   show,
   create,
+  addOpinion,
   update,
   destroy
 ];

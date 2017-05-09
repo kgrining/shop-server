@@ -10,7 +10,6 @@ const UserSchema = new Schema({
   password: {type: String, required: true},
   admin: {type: Boolean, required: true},
   transactions: {type: [Schema.Types.ObjectId], ref: 'Transaction'},
-  opinions: {type: [Schema.Types.ObjectId], ref: 'Opinion'},
   savedBasket: {type: [{item: {type: Schema.Types.ObjectId, ref: 'Item'}, quantity: Number}]}
 });
 

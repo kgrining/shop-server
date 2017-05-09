@@ -9,7 +9,13 @@ const ItemSchema = new Mongoose.Schema({
   desc: String,
   imgPath: String,
   price: Number,
-  opinions: {type: [Schema.Types.ObjectId], ref: 'Opinion'}
+  opinions: {
+    type: [{
+      user: {type: Schema.Types.ObjectId, ref: 'User'},
+      date: Date,
+      content: String
+    }]
+  }
 });
 
 module.exports = Mongoose.model('Item', ItemSchema);

@@ -72,15 +72,24 @@ const create = {
     });
     transaction.basket = payload.basket;
     transaction.owner = jwt.decode(request.query.token).id;
-    Transaction.create(transaction).then((result) => {
-      User.findById(transaction.owner).then((found) => {
-        found.transactions.push(result._id);
-        found.save((err) => {
-          console.log(err);
-        });
-      });
+    const transactionCreatePromise = Transaction.create(transaction);
+    const userFindPromise = User.findById(transaction.owner);
+
+    Promise.all([transactionCreatePromise, userFindPromise]).then(([result, found]) => {
+      found.transactions.push(result._id);
+      return found.save();
+    }).then(() => {
       reply(result).code(201);
     });
+    // Transaction.create(transaction).then((result) => {
+    //   User.findById(transaction.owner).then((found) => {
+    //     found.transactions.push(result._id);
+    //     found.save((err) => {
+    //       console.log(err);
+    //     });
+    //   });
+    //   reply(result).code(201);
+    // });
   }
 };
 
