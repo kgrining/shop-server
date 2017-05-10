@@ -2,9 +2,7 @@
 
 const bcrypt = require('bcryptjs');
 const Boom = require('boom');
-const Joi = require('joi');
 const User = require('../users.model');
-const createToken = require('./token');
 
 const hashPassword = function (password, cb) {
     // Generate a salt at level 10 strength
@@ -17,30 +15,34 @@ const hashPassword = function (password, cb) {
 
 const verifyCredentials = function (req, res) {
 
-  console.log(req.payload);
-
   const password = req.payload.password;
 
     // Find an entry from the database that
     // matches either the email or username
   User.findOne({
     $or: [
-            {email: req.payload.email},
-            {username: req.payload.username}
+            {email: req.payload.usernameOrEmail},
+            {username: req.payload.usernameOrEmail}
     ]
   }, (err, user) => {
+    if (err) {
+      res(Boom.badRequest('Failed login attempt!'));
+    }
     if (user) {
       bcrypt.compare(password, user.password, (err, isValid) => {
+        if (err) {
+          res(Boom.badRequest('Failed login attempt!'));
+        }
         if (isValid) {
           res(user);
         }
         else {
-          res(Boom.badRequest('Incorrect password!'));
+          res(Boom.badRequest('Failed login attempt!'));
         }
       });
     }
     else {
-      res(Boom.badRequest('Incorrect username or email!'));
+      res(Boom.badRequest('Failed login attempt!'));
     }
   });
 };
@@ -48,7 +50,6 @@ const verifyCredentials = function (req, res) {
 const verifyUniqueUser = function (req, res) {
     // Find an entry from the database that
     // matches either the email or username
-  console.log('weryfikujeUnique');
 
   User.findOne({
     $or: [
@@ -56,8 +57,9 @@ const verifyUniqueUser = function (req, res) {
             {username: req.payload.username}
     ]
   }, (err, user) => {
-        // Check whether the username or email
-        // is already taken and error out if so
+    if (err) {
+      res(Boom.badRequest('Error'));
+    }
     if (user) {
       if (user.username === req.payload.username) {
         res(Boom.badRequest('Username taken'));
@@ -69,8 +71,6 @@ const verifyUniqueUser = function (req, res) {
     else {
       res(req.payload);
     }
-        // If everything checks out, send the payload through
-        // to the route handler
   });
 };
 
