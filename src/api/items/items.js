@@ -63,7 +63,7 @@ const addOpinion = {
   handler: (request, reply) => {
     const {id} = request.params;
     const opinion = {
-      user: request.auth.credentials.id,
+      user: request.auth.credentials.user.id,
       date: new Date(),
       content: request.payload.content
     };
