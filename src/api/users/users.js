@@ -71,7 +71,7 @@ const getMyUser = {
   path: '/api/users/me',
   config: {
     handler: (request, reply) => {
-      const user = request.auth.credentials;
+      const {user} = request.auth.credentials;
       reply(user);
     }
   }
@@ -82,9 +82,8 @@ const saveBasket = {
   path: '/api/users/saveBasket',
   config: {
     handler: (request, reply) => {
-      const user = request.auth.credentials;
+      const {user} = request.auth.credentials;
       user.savedBasket = request.payload;
-      console.log(user.savedBasket);
       user.save((err) => {
         if (err) {
           throw Boom.badRequest(err);
@@ -101,14 +100,13 @@ const getBasket = {
   path: '/api/users/getBasket',
   config: {
     handler: (request, reply) => {
-      const user = request.auth.credentials;
+      const {user} = request.auth.credentials;
       User.findById(user.id)
                 .populate({path: 'savedBasket.item', model: 'Item'})
                 .exec((err, user) => {
                   if (err) {
                     throw Boom.badRequest(err);
                   }
-                  console.log(user.savedBasket);
                   reply(user.savedBasket).code(201);
                 });
     }
@@ -121,24 +119,17 @@ const getAll = {
   config: {
     handler: (request, reply) => {
       User
-                .find()
-                // Deselect the password and version fields
+                .find({})
                 .select('-password -__v')
-                .exec((err, users) => {
-                  if (err) {
-                    throw Boom.badRequest(err);
-                  }
-                  if (!users.length) {
-                    throw Boom.notFound('No users found!');
-                  }
-                  reply(users);
+                .then((result) => {
+                  reply(result);
                 });
     },
-        // Add authentication to this route
-        // The user must have a scope of `admin`
     auth: {
       strategy: 'jwt',
-      scope: ['admin']
+      access: [{
+        scope: 'admin'
+      }]
     }
   }
 };

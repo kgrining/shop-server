@@ -10,10 +10,22 @@ const jwt = require('jsonwebtoken');
 const index = {
   method: 'GET',
   path: '/api/transactions',
-  handler: (request, reply) => {
-    Transaction.find({}).then((result) => {
-      reply(result);
-    });
+  config: {
+    handler: (request, reply) => {
+      Transaction.find({}).populate({
+        path: 'owner',
+        model: 'User',
+        select: 'username email'
+      }).then((result) => {
+        reply(result);
+      });
+    },
+    auth: {
+      strategy: 'jwt',
+      access: [{
+        scope: 'admin'
+      }]
+    }
   }
 };
 
@@ -21,7 +33,7 @@ const myHistory = {
   method: 'GET',
   path: '/api/getHistory',
   handler: (request, reply) => {
-    const {_id} = request.auth.credentials;
+    const {_id} = request.auth.credentials.user;
     Transaction
           .find({'owner': {_id}})
           .populate({
@@ -81,15 +93,6 @@ const create = {
     }).then(() => {
       reply(result).code(201);
     });
-    // Transaction.create(transaction).then((result) => {
-    //   User.findById(transaction.owner).then((found) => {
-    //     found.transactions.push(result._id);
-    //     found.save((err) => {
-    //       console.log(err);
-    //     });
-    //   });
-    //   reply(result).code(201);
-    // });
   }
 };
 

@@ -9,9 +9,9 @@ const register = function register(server, options, next) {
   server.auth.strategy('jwt', 'jwt',
     {key: secret,
       validateFunc: (decoded, request, callback) => {
-        User.findById(decoded.id, '-password -__v -transactions -savedBasket -opinions').then((user) => {
+        User.findById(decoded.id, '-password -__v -transactions -savedBasket').then((user) => {
           if (user) {
-            return callback(null, true, user);
+            return callback(null, true, {user, 'scope': decoded.scope});
           }
           return callback(null, false);
         }).catch((err) => {
