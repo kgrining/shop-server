@@ -20,7 +20,6 @@ const authenticate = {
             {method: verifyCredentials, assign: 'user'}
     ],
     handler: (request, reply) => {
-      console.log(request.payload);
       reply({id_token: createToken(request.pre.user)}).code(201);
     },
         // Validate the payload against the Joi schema

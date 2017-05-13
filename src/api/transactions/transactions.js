@@ -83,7 +83,7 @@ const create = {
       return {item: current.item._id, quantity: current.quantity};
     });
     transaction.basket = payload.basket;
-    transaction.owner = jwt.decode(request.query.token).id;
+    transaction.owner = request.auth.credentials.user;
     const transactionCreatePromise = Transaction.create(transaction);
     const userFindPromise = User.findById(transaction.owner);
 
