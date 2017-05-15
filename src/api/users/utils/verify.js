@@ -48,8 +48,6 @@ const verifyCredentials = function (req, res) {
 };
 
 const verifyUniqueUser = function (req, res) {
-    // Find an entry from the database that
-    // matches either the email or username
 
   User.findOne({
     $or: [

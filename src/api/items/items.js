@@ -4,18 +4,11 @@ const Item = require('./items.model');
 const Joi = require('joi');
 const Boom = require('boom');
 
-const notFound = {
-  statusCode: 404,
-  error: 'Not Found'
-};
-
 const index = {
   method: 'GET',
   path: '/api/items',
   handler: (request, reply) => {
-    Item.find({}).then((result) => {
-      reply(result);
-    });
+    Item.find({}).then(reply);
   }
 };
 
@@ -59,7 +52,7 @@ const create = {
 
 const addOpinion = {
   method: 'POST',
-  path: '/api/items/addOpinion/{id}',
+  path: '/api/items/{id}/opinions',
   handler: (request, reply) => {
     const {id} = request.params;
     const opinion = {

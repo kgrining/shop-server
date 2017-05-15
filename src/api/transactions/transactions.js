@@ -31,7 +31,7 @@ const index = {
 
 const myHistory = {
   method: 'GET',
-  path: '/api/getHistory',
+  path: '/api/transactions/history',
   handler: (request, reply) => {
     const {_id} = request.auth.credentials.user;
     Transaction
